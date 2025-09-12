@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختبار القدرات العامة</title>
+<style>
+body{font-family:tahoma,arial,sans-serif;background:#f0f2f5;margin:0;padding:20px;}
+#qodrat-quiz, #finalSubmit{background:#fff;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.1);max-width:900px;margin:auto;padding:20px;}
+button{transition:0.2s;}
+</style>
+</head>
+<body>
+
+<section id="qodrat-quiz">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+    <h2 id="quizTitle">🧠 اختبار القدرات العامة</h2>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;">
+      <div id="timer" style="font-weight:bold;color:red;font-size:22px;">25:00</div>
+      <div style="width:150px;height:8px;background:#ddd;border-radius:4px;margin-top:3px;overflow:hidden;">
+        <div id="timerBar" style="width:100%;height:100%;background:#2196f3;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:20px;">
+    <div style="flex:1;min-width:200px;background:#f8f8f8;padding:12px;border-radius:8px; text-align:right; direction:rtl;">
+      <h3>📌 تعليمات</h3>
+      <ul>
+        <li>أجب عن كل سؤال قبل الانتقال للسؤال التالي.</li>
+        <li>يمكنك استخدام زر "السابق" لمراجعة السؤال السابق.</li>
+        <li>المؤقت يظهر في الأعلى ويحسب الوقت المتبقي.</li>
+        <li>بعد انتهاء القسم اضغط "تسليم القسم" للانتقال للقسم التالي.</li>
+      </ul>
+    </div>
+
+    <div style="flex:2;min-width:300px;">
+      <div id="questionText" style="font-weight:700;margin-bottom:20px;font-size:22px;"></div>
+      <div id="options" style="display:flex;flex-direction:column;gap:15px"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;margin-top:25px;">
+    <button id="prevBtn" style="padding:14px 20px;background:#ccc;color:#000;border:none;border-radius:6px;cursor:pointer;display:none;">السابق</button>
+    <button id="nextBtn" style="padding:14px 20px;background:#2196f3;color:#fff;border:none;border-radius:6px;cursor:pointer;">التالي</button>
+    <button id="submitSectionBtn" style="padding:14px 20px;background:#2ecc71;color:#fff;border:none;border-radius:6px;cursor:pointer;display:none;">تسليم القسم</button>
+  </div>
+</section>
+
+<section id="finalSubmit" style="display:none;max-width:500px;margin:auto;padding:20px;">
+  <h2>📋 تسليم الاختبار النهائي</h2>
+  <p>الرجاء إدخال البيانات التالية:</p>
+  <input type="text" id="studentName" placeholder="الاسم الكامل" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
+  <input type="text" id="studentID" placeholder="الهوية الوطنية" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
+  <input type="text" id="studentClass" placeholder="الصف الدراسي" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
+  <button id="submitFinalBtn" style="padding:14px 20px;background:#2ecc71;color:#fff;border:none;border-radius:6px;cursor:pointer;">تسليم الاختبار النهائي</button>
+</section>
+
+<script>
+// ======= إعداد التوقيت =======
+const sectionTimers = true; // true لكل قسم، false لتوقيت إجمالي للاختبار
+const sectionTime = 1500; // 25 دقيقة لكل قسم
+
+// ======= إدخال الأسئلة والإجابات هنا =======
+const sections = [
+  {
+    title: "القسم الأول: القدرات اللفظي ",
+    questions: [
+      { q: "حبر : قلم", options:["ماء : طاقة","هواء : تنفس","بنزين : سيارة","غذاء : إنسان"], answer:"بنزين : سيارة" },
+ 
+    ]
+  },
+  {
+    title: "القسم الثاني: القدرات الكمي",
+    questions: [
+         { q: "اذا كان اليوم هو الخميس فكم يتكرر يوم السبت خلال ٧٣يوم", options:[" 11 "," 12 "," 15 ","10 "], answer:"11" },
+
+    ]
+  }
+];
+
+let currentSection=0, currentQ=0, userAnswers=[], totalTime=sectionTimers?sectionTime:sectionTime*sections.length, timerInterval;
+
+const quizTitle=document.getElementById("quizTitle"),
+      questionText=document.getElementById("questionText"),
+      optionsDiv=document.getElementById("options"),
+      prevBtn=document.getElementById("prevBtn"),
+      nextBtn=document.getElementById("nextBtn"),
+      submitSectionBtn=document.getElementById("submitSectionBtn"),
+      timerDisplay=document.getElementById("timer"),
+      timerBar=document.getElementById("timerBar"),
+      quizContainer=document.getElementById("qodrat-quiz"),
+      finalSubmit=document.getElementById("finalSubmit"),
+      submitFinalBtn=document.getElementById("submitFinalBtn");
+
+function loadQuestion(){
+  const q=sections[currentSection].questions[currentQ];
+  questionText.innerText=`السؤال ${currentQ+1}: ${q.q}`;
+  optionsDiv.innerHTML="";
+  const labels=["أ","ب","ج","د"];
+  q.options.forEach((opt,i)=>{
+    let btn=document.createElement("button");
+    btn.innerText=`${labels[i]} - ${opt}`;
+    btn.style.padding="16px"; btn.style.fontSize="20px"; btn.style.borderRadius="8px"; btn.style.border="1px solid #ccc"; btn.style.cursor="pointer";
+    btn.style.background=userAnswers[currentSection][currentQ]===opt?"#ffd54f":"#e0f7fa";
+    btn.onmouseover=()=>{btn.style.boxShadow="0 4px 12px rgba(0,0,0,0.2)";};
+    btn.onmouseout=()=>{btn.style.boxShadow="none";};
+    btn.onclick=()=>{ selectAnswer(opt); loadQuestion(); };
+    optionsDiv.appendChild(btn);
+  });
+  prevBtn.style.display=currentQ===0?"none":"inline-block";
+  nextBtn.style.display=currentQ===sections[currentSection].questions.length-1?"none":"inline-block";
+  submitSectionBtn.style.display=currentQ===sections[currentSection].questions.length-1?"inline-block":"none";
+}
+
+function selectAnswer(ans){ userAnswers[currentSection][currentQ]=ans; }
+
+prevBtn.onclick=()=>{if(currentQ>0){currentQ--; loadQuestion();}};
+nextBtn.onclick=()=>{if(currentQ<sections[currentSection].questions.length-1){currentQ++; loadQuestion();}};
+submitSectionBtn.onclick=submitSection;
+
+function submitSection(){
+  if(!sectionTimers && currentSection<sections.length-1){ currentSection++; loadQuestion(); return; }
+  clearInterval(timerInterval);
+  if(currentSection<sections.length-1){
+    currentSection++;
+    startSection();
+  } else {
+    quizContainer.style.display="none";
+    finalSubmit.style.display="block";
+  }
+}
+
+function startSection(){
+  quizTitle.innerText=sections[currentSection].title;
+  currentQ=0;
+  userAnswers[currentSection]=[];
+  if(sectionTimers) totalTime=sectionTime;
+  loadQuestion();
+  prevBtn.style.display="none";
+  nextBtn.style.display="inline-block";
+  submitSectionBtn.style.display="none";
+
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    let minutes=Math.floor(totalTime/60), seconds=totalTime%60;
+    timerDisplay.innerText=`${minutes}:${seconds<10?"0"+seconds:seconds}`;
+    timerBar.style.width=(totalTime/(sectionTimers?sectionTime:sectionTime*sections.length)*100)+"%";
+    totalTime--;
+    if(totalTime<0){ clearInterval(timerInterval); submitSection(); }
+  },1000);
+}
+
+submitFinalBtn.onclick=()=>{
+  const name=document.getElementById("studentName").value,
+        id=document.getElementById("studentID").value,
+        cls=document.getElementById("studentClass").value;
+  if(!name||!id||!cls){ alert("الرجاء إدخال جميع البيانات."); return; }
+
+  let totalScore=0;
+  sections.forEach((sec,i)=>{ sec.questions.forEach((q,j)=>{ if(userAnswers[i][j]===q.answer) totalScore++; }); });
+
+  finalSubmit.innerHTML=`<h2>✅ تم تسليم الاختبار</h2>
+    <p>الاسم: ${name}</p>
+    <p>الهوية: ${id}</p>
+    <p>الصف: ${cls}</p>
+    <p>الدرجة النهائية: ${totalScore} من ${sections.reduce((a,b)=>a+b.questions.length,0)}</p>`;
+}
+
+window.onbeforeunload=()=>"هل أنت متأكد من مغادرة الصفحة؟ سيتم فقد الإجابات إذا غادرت.";
+
+startSection();
+</script>
+</body>
+</html>
