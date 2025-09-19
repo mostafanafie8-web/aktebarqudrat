@@ -2,20 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>اختبار القدرات العامة</title>
+<title>اختبار القدرات العامة </title>
 <style>
 body{font-family:tahoma,arial,sans-serif;background:#f0f2f5;margin:0;padding:20px;}
 #qodrat-quiz, #finalSubmit{background:#fff;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.1);max-width:900px;margin:auto;padding:20px;}
 button{transition:0.2s;}
+@media (max-width:768px){
+  #qodrat-quiz > div:first-child, #qodrat-quiz > div:nth-child(2){flex-wrap:wrap;}
+}
 </style>
-</head>
+<header style="background:#2196f3;color:#fff;padding:18px;text-align:center;
+border-radius:0 0 12px 12px;box-shadow:0 3px 12px rgba(0,0,0,0.1);margin-bottom:20px;">
+  <h1 style="margin:0;font-size:26px;">📝 منصة اختباراتي | اختبار القدرات العامة</h1>
+  <p style="margin:5px 0 0;font-size:16px;">ثانوية الفيصلية الأهلية</p>
+</header>
 <body>
 
 <section id="qodrat-quiz">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-    <h2 id="quizTitle">🧠 اختبار القدرات العامة</h2>
+    <h2 id="quizTitle">🧠 اختبار  القدرات العامة</h2>
     <div style="display:flex;flex-direction:column;align-items:flex-end;">
-      <div id="timer" style="font-weight:bold;color:red;font-size:22px;">25:00</div>
+      <div id="timer" style="font-weight:bold;color:red;font-size:22px;">20:00</div>
       <div style="width:150px;height:8px;background:#ddd;border-radius:4px;margin-top:3px;overflow:hidden;">
         <div id="timerBar" style="width:100%;height:100%;background:#2196f3;"></div>
       </div>
@@ -27,9 +34,9 @@ button{transition:0.2s;}
       <h3>📌 تعليمات</h3>
       <ul>
         <li>أجب عن كل سؤال قبل الانتقال للسؤال التالي.</li>
-        <li>يمكنك استخدام زر "السابق" لمراجعة السؤال السابق.</li>
+        <li>يمكنك استخدام زر "السابق" لمراجعة السؤال السابق داخل القسم.</li>
         <li>المؤقت يظهر في الأعلى ويحسب الوقت المتبقي.</li>
-        <li>بعد انتهاء القسم اضغط "تسليم القسم" للانتقال للقسم التالي.</li>
+        <li>بعد انتهاء الـ 20 دقيقة سيتم الانتقال للقسم التالي تلقائيًا.</li>
       </ul>
     </div>
 
@@ -42,56 +49,103 @@ button{transition:0.2s;}
   <div style="display:flex;justify-content:space-between;margin-top:25px;">
     <button id="prevBtn" style="padding:14px 20px;background:#ccc;color:#000;border:none;border-radius:6px;cursor:pointer;display:none;">السابق</button>
     <button id="nextBtn" style="padding:14px 20px;background:#2196f3;color:#fff;border:none;border-radius:6px;cursor:pointer;">التالي</button>
-    <button id="submitSectionBtn" style="padding:14px 20px;background:#2ecc71;color:#fff;border:none;border-radius:6px;cursor:pointer;display:none;">تسليم القسم</button>
   </div>
 </section>
 
 <section id="finalSubmit" style="display:none;max-width:500px;margin:auto;padding:20px;">
   <h2>📋 تسليم الاختبار النهائي</h2>
   <p>الرجاء إدخال البيانات التالية:</p>
-  <input type="text" id="studentName" placeholder="الاسم الكامل" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
-  <input type="text" id="studentID" placeholder="الهوية الوطنية" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
-  <input type="text" id="studentClass" placeholder="الصف الدراسي" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;">
+  <input type="text" id="studentName" placeholder="الاسم الكامل" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;" oninput="this.value=this.value.replace(/[^ء-ي\s]/g,'')">
+  <input type="text" id="studentID" placeholder="الهوية الوطنية" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+  <input type="text" id="studentClass" placeholder="الصف الدراسي" style="width:100%;padding:12px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;font-size:16px;" oninput="this.value=this.value.replace(/\D/g,'')">
   <button id="submitFinalBtn" style="padding:14px 20px;background:#2ecc71;color:#fff;border:none;border-radius:6px;cursor:pointer;">تسليم الاختبار النهائي</button>
 </section>
 
 <script>
-// ======= إعداد التوقيت =======
-const sectionTimers = true; // true لكل قسم، false لتوقيت إجمالي للاختبار
-const sectionTime = 1500; // 25 دقيقة لكل قسم
+const sectionTime = 120; // 2 دقيقة لكل قسم
 
-// ======= إدخال الأسئلة والإجابات هنا =======
+// 20 سؤال لكل قسم (ضع أسئلتك هنا)
 const sections = [
   {
-    title: "القسم الأول: القدرات اللفظي ",
+    title: "القسم الأول: (20سؤال) ",
     questions: [
-      { q: "حبر : قلم", options:["ماء : طاقة","هواء : تنفس","بنزين : سيارة","غذاء : إنسان"], answer:"بنزين : سيارة" },
- 
+      { q: " غرفة : باب ", options:[" نافذة : بيت","قفل : مفتاح ","باخرة : بحر "," زرع : حصاد"], answer:" قفل : مفتاح" },
+      { q: "إذا كان عبد الله يصرف 8ريال كل 12 ساعة كم يصرف في 30 يوما   ", options:["ريال400 ","ريال450 ","ريال460 "," ريال480"], answer:" ريال480" },
+      { q: " إذا أقبلت الدنيا على إنسان ....محاسن غيره،وإذا أدبرت عنه.....محاسن نفسه. ", options:["كرهته - زينت له ","ذكرته - أعطته ","منحته - سلبته "," البسته - كسته"], answer:"منحته - سلبته " },
+      { q: " إذا كان محمد يصرف في اليوم 150 ريال في كم يوم يصرفر900 ريال  ", options:["أيام4 ","أيام5 "," أيام6","أيام7 "], answer:"أيام6 " },
+      { q: "مستطيل طوله يساوي ضعف عرضه سيج بسياج طوله 36 متر اوجد مساحته   ", options:["48 "," 52"," 72"," 60"], answer:"72 " },
+      { q: " يعبر مفهوم التصحر عن العملية التي تؤدي إلى تقليل الإنتاجية  البيولوجية للأراضي الجافة، وهي الأراضي القاحلة أو شبه القاحلة نتيجة لأسباب طبيعية أو بشرية، ومن أبرز أسباب التصحر الرعي الجائر الضي أدى إلى قلة نمو النباتات، والزراعة الخاطئة فهناك بعض المزارعين الذين يجهلون استخدام  الأراضي بالطريقة الفعالة، مما يقودة إلى تجريد الأرض من مكوناتها قبل تركها والذهاب إلى قطة أرض أخرى ، والتحضر الذي نتج عنه تقليل المناطق التي تنمو بها النباتات مما يقود غلى التصحر بعدما تدهورت انتاجية الأراضي كم سببا للتصحر ورد بالنص؟ ", options:["أسباب4 ","أسباب3 "," أسباب2"," أسباب5"], answer:"أسباب3 " },
+      { q: " ثلاثة عمال يعملون لمدة 6 ساعات واجرهم جميعا 1100 ريال اذا كان الأول يعمل المدة كاملة والثاني يعمل نصف المدة والثالث يعمل ثلث المدة كم سيكون اجر كل واحد منهم بالترتيب ", options:["600 – 300 – 200                            ","600 - 400– 100 ","300 – 600 – 200 ","600 – 200 – 300 "], answer:"600 – 300 – 200 " },
+      { q: "ماء : حياة  ", options:[" تجارة : بيع","استقرار : سكن "," مطار : سفر","قراءة : فهم "], answer:"مطار : سفر " },
+      { q: "  اوجد ( 5-2 ) ×(5-3) ×( 5-4) × ………………..   ×(5-7)  ", options:["صفر ","51 "," 42","-42 "], answer:"صفر " },
+      { q: " من مهارات القيادة السيطرة على مشكلات العمل وتعقيدها وحسم الخلافات والترجيح بين الآراء. ", options:["القيادة "," مشكلات"," تعقيدها","الخلافات "], answer:"تعقيدها " },
+      { q: " مستطيل يتكون من 6 مربعات ومحيط المستطيل 350 سم اوجد طول ضلع المربع الواحد  ", options:["20 ","25 "," 30","35 "], answer:"35 " },
+      { q: "العتاب علامة....وسلاح الأكفاء، فمن زاد حقدة.....عاتبه  ", options:["الوفاء - كثر ","النفاق - قل ","النبل - كثر ","الوفاء - قل "], answer:"الوفاء - قل " },
+      { q: "تقوم الجهات المختصة برصد ....التجاري في المنتجات ، والتعامل مع....وفق ما يقتضيه النظام  ", options:["التعامل - التاجر "," البيع - المشتري","المال - صاحبه ","الغش - فاعله "], answer:"  الغش - فاعله" },
+      { q: " ولد : دلو ", options:[" بحر : رحب","ليمون : حمضيات "," كسوف : خسوف"," غنى : طغيان"], answer:"  بحر : رحب" },
+      { q: " محيط المعين 40سم اذا كان طول أحد الأقطار 12 سم كم طول القطر الاخر  ", options:["16 ","12 "," 18"," 20"], answer:"18 " },
+      { q: "لذة العابدين في المناجاة، ولذة العلماء في التفكير، ولذة الأسخياء في الإمساك، ولذة المصلحين في الهداية.  ", options:["المناجاة ","التفكير ","الإمساك ","الهداية "], answer:"الإمساك " },
+      { q: "    سيارة تقطع 60 كم / ساعة كم تقطع بعد ساعة وأربع دقائق  ", options:["كم64 ","كم60 "," كم70","كم80 "], answer:"كم64 " },
+      { q: " إذا كان ثمن 3 آلات حاسبة وقلم = 90 ريال وثمن 9 الات حاسبة وقلمين 240 ريال كم سعر الالة الحاسبة  ", options:[" ريال20"," ريال30"," ريال40"," ريال50"], answer:"ريال20 " },
+      { q: "  اذا كان عمر فهد ربع عمر ابيه وخالد يزيد 3 سنوات عن فهد كم عمر خالد إذا كان عمر الاب 36 سنة ", options:["16 "," 20"," 22","12 "], answer:"12 " },
+      { q: " شراء : نقود ", options:["تفكير : ألعاب ","حكمة : تجربة ","علاج : طعام "," عطش : ماء"], answer:" حكمة : تجربة" },
+      { q: "أب كان عمره قبل ولادة محمد بثلاث سنوات 19 سنة كم يكون مجموع عمريهما بعد 10 سنوات    ", options:[" 65","61 ","42 "," 45"], answer:"42 " },
+      { q: " من يعرف طريق الحق.....التضحيات من أجله ", options:["ظهرت "," بانت","خفيت ","هانت "], answer:"هانت " },
+      { q: " اذا كان لديك بطاقات ملونة على الترتيب التالي أحمر، أزرق , أصفر , أخضر  فما هو اللون رقم 117 ", options:["أزرق "," أحمر"," أخضر"," أصفر"], answer:"أحمر " },
+      { q: "الإنسان بعد التمرين يحتاج إلى ماء بكميات متجانسة ليعوض ما فقد جسمه من ماء.  ", options:["الإنسان ","متجانسة "," ليعوض","فقد "], answer:"متجانسة " },
+      { q: " يعتبر الذكاء....من أهم مميزات القادة ، حيث يستطيع التعامل مع مختلف....وتطوير العلاقات. ", options:[" الدولي - الدول","العاطفي - الشخصيات ","الإلكتروني - الاجهزة "," الاجتماعي - الأقرباء"], answer:"العاطفي - الشخصيات " },
+
     ]
   },
   {
-    title: "القسم الثاني: القدرات الكمي",
+    title: "القسم الثاني: (20سؤال)",
     questions: [
-         { q: "اذا كان اليوم هو الخميس فكم يتكرر يوم السبت خلال ٧٣يوم", options:[" 11 "," 12 "," 15 ","10 "], answer:"11" },
+            { q: "إذا كان الثوب الواحد يحتاج    3,8    متر قماش ولدينا 32 متر كم ثوب نستطيع صنعه   ", options:[" ثياب11","ثياب10 ","ثياب 9"," ثياب8"], answer:"ثياب8 " },
+      { q: " الذنوب تخرس الكتب الفصيحة وتعي الأفئدة الصحيحة ", options:[" الذنوب"," الكتب","الأفئدة ","الصحيحة "], answer:"الكتب " },
+      { q: "الحد السادس في المتتابعة   3 ,  5  ,   8 ,     13 , 21 , …………..  ", options:[" 20"," 24"," 30","34 "], answer:"34 " },
+      { q: " عدد إذا ضرب في 4 وضيف اليه 7 أصبح الناتج 25 فما هو العدد ", options:["3.5 ","7 ","4.5 ","5 "], answer:"4.5 " },
+      { q: "  يثبط : يشجع", options:["يرسم : يلون ","يعتني : يهمل ","يستشير : يقرر ","  يأمر : يحث"], answer:"يهمل : يعتني " },
+      { q: " الخلق ..... يحبب صاحبه إلى الناس جميعل، ويتمكن بذلك من إرضاء الناس على اختلاف......المتنوعة ", options:["المعتدل - أنواعهم ","الحسن - طبقاتهم ","الغليظ أنواعهم ","الجميل - أعمالهم "], answer:"الحسن - طبقاتهم " },
+      { q: "مصنع ينتج علب عصير على الترتيب   فراولة ’ مانجوا , تفاح , اناناس فان العلبة رقم 95 تكون   ", options:["فراولة "," مانجو","تفاح ","اناناس "], answer:"تفاح " },
+      { q: "عددان حاصل ضربهما 8 والفرق بين مربعيهما 12 فيكون العددان   ", options:[" 8،1","4،2"," 6،4","10،2 "], answer:"4،2 " },
+      { q: " يسمى كوكب الأرض بالكوكب الأزرق لأن 70% منها عبارة عن ماء، وإذا نظرت إلى الأرض من الفضاء ستجدها زرقاء ، يدور القمر حول الأرض في 27 يوم و8 ساعات، ويدور حول نفسه في المدة نفسها ؛ وهو ما يؤدي إلى ظهور نفس شكل القمر .هل تعلم ما في الوجه الآخر للقمى؟ ففي عام 1972 هبطت على القمر مركبة ليون الروسية على الوجه الآخر وكشفت أنه ملآن بالفجوات والأتربة. لا هواء على القمر لذا لا يوجد طقس ولا مناخ ولا يمكن التحكم فيها وقياسها؛ لذا فإن آثار رواد الفضاء الذين صعدوا على القمر لا تزال محفوظة حتى يأتي أحد ما ويمحوها .فهل سيأتي؟  من خلال القطعة : يدور القمر حول نفسه كم مرة في السنة  ", options:["24 "," 30"," 12","18 "], answer:"12 " },
+      { q: " من خلال النص السابق : علاقة جملة( يدور القمر حول الأرض) بما قبلها  ", options:["مستقلة ","ممهدة "," محللة","توضيح "], answer:"مستقلة " },
+      { q: " في القطعة السابقة: مرجع تفاوت الطقس فوق سطح القمر ", options:["الرياح "," المناخ","الهواء","الحرارة "], answer:"الهواء " },
+      { q: " أنسب عنوان للنص السابق ", options:[" الأرض والماء"," الكوكب الأزرق","وصف القمر "," الأرض والقمر"], answer:" الأرض والقمر" },
+      { q: "اشترت مريم الة حاسب الي ب 4000 ريال وفي كل سنة ينخفض السعر بمقدار ثابت ليصل بعد سنتين الى 2500 ريال كم قيمة التخفيض في السنة الواحدة   ", options:[" ريال750"," ريال1000","1500ريال "," ريال2000"], answer:"ريال750 " },
+      { q: " حاسر : رأس ", options:["حافي : قدم "," أعسب : رأس","أشعس : شعر ","عريان : ثوب "], answer:"حافي : قدم " },
+      { q: "  القلق لا يجتمع مع التقدير الجماعي،فالقلق يتوقف مع الإطمئنان النفسي والسعادة ويؤثر سلبا عليه.", options:["يجتمع "," الجماعي"," السعادة","سلبا "], answer:"الجماعي " },
+      { q: "شخص يخرج من بيته الساعة 9 مساء ويعود بعد 16 ساعة ماهي الساعة التي عاد فيها   ", options:["مساء1 "," صباحا1"," مساء9"," 12مساء"], answer:"مساء1 " },
+      { q: "إذا كانت السيارة الأولى تستخدم 20 لتر للساعة والسيارة الثانية تستخدم 15 لتر للساعة اوجد الفرق بين اللترات بعد مضي 10 ساعات   ", options:["لتر70 ","لتر50 "," لتر60","45لتر "], answer:"لتر50 " },
+      { q: " مادام .....لا يبلغ حد التأنق المفرط؛ فهو من الزينة التي....الله لعبادة. ", options:["التطيب - الحكمة ","التزين - المنحة ","التنظف - الحلية ","التجمل - الزينة "], answer:"التجمل - الزينة " },
+      { q: " الزاوية بين عقربي الساعات والدقائق (الزاوية الصغرى) عند الساعة الثانية والثلث  ", options:["60 "," 50","120 ","300 "], answer:" 50" },
+      { q: "  لو رأيت شخصا يقوم بالأشياء المدهشة كما لو كانت خارقة فعض عليه بالنواجز.", options:[" الأشياء","المدهشة "," خارقة","النواجز "], answer:"خارقة " },
+      { q: " النسبة بين مساحتي دائرتين هو   144 ⋮ 1   مهي النسبة بين نصفي قطريهما   ", options:["1 ⋮ 6 "," 1 ⋮ 12"," 1 ⋮ 36","1 ⋮ 71 "], answer:"1 ⋮ 12 " },
+      { q: " طهر : عفاف ", options:[" أنانية : سوء","  عداوة : خداع","قراءة : تأني ","رفيع : مستوى "], answer:"عداوة : خداع " },
+      { q: "طائرة ركاب فيها 80 راكب رجال وأطفال ونساء نسبة الرجال 60% ونسبة الأطفال للنساء 1 ⋮ 3 كم عدد الأطفال   ", options:["32 ","8 ","16 "," 24"], answer:"8 " },
+      { q: " إذا كان 40 %   من عدد يساوي 24 فان العدد هو   ", options:["50 ","56 ","60 ","72 "], answer:" 60" },
+      { q: " إذا لم..... تفعل شيئا جديدا  أبعد مما قد اتقنته؛ فإنك لن..... أبدا. ", options:[" تفعل - تتأخر"," تترك - تتقدم"," تحاول - تتقدم","تترك - تتأخر "], answer:" تحاول - تتقدم" },
+
 
     ]
+
   }
 ];
 
-let currentSection=0, currentQ=0, userAnswers=[], totalTime=sectionTimers?sectionTime:sectionTime*sections.length, timerInterval;
+let currentSection=0, currentQ=0, userAnswers=[], sectionScores=[], totalTime=sectionTime, timerInterval;
 
 const quizTitle=document.getElementById("quizTitle"),
       questionText=document.getElementById("questionText"),
       optionsDiv=document.getElementById("options"),
       prevBtn=document.getElementById("prevBtn"),
       nextBtn=document.getElementById("nextBtn"),
-      submitSectionBtn=document.getElementById("submitSectionBtn"),
       timerDisplay=document.getElementById("timer"),
       timerBar=document.getElementById("timerBar"),
       quizContainer=document.getElementById("qodrat-quiz"),
       finalSubmit=document.getElementById("finalSubmit"),
       submitFinalBtn=document.getElementById("submitFinalBtn");
 
+// ======= تحميل السؤال =======
 function loadQuestion(){
   const q=sections[currentSection].questions[currentQ];
   questionText.innerText=`السؤال ${currentQ+1}: ${q.q}`;
@@ -100,27 +154,52 @@ function loadQuestion(){
   q.options.forEach((opt,i)=>{
     let btn=document.createElement("button");
     btn.innerText=`${labels[i]} - ${opt}`;
-    btn.style.padding="16px"; btn.style.fontSize="20px"; btn.style.borderRadius="8px"; btn.style.border="1px solid #ccc"; btn.style.cursor="pointer";
-    btn.style.background=userAnswers[currentSection][currentQ]===opt?"#ffd54f":"#e0f7fa";
-    btn.onmouseover=()=>{btn.style.boxShadow="0 4px 12px rgba(0,0,0,0.2)";};
-    btn.onmouseout=()=>{btn.style.boxShadow="none";};
-    btn.onclick=()=>{ selectAnswer(opt); loadQuestion(); };
+    btn.style.padding="16px"; btn.style.fontSize="20px"; btn.style.borderRadius="8px";
+    btn.style.border="1px solid #ccc"; btn.style.cursor="pointer";
+    btn.style.background=userAnswers[currentSection]?.[currentQ]===opt?"#ffd54f":"#e0f7fa";
+    btn.onclick=()=>{
+      if(!userAnswers[currentSection]) userAnswers[currentSection]=[];
+      userAnswers[currentSection][currentQ]=opt;
+      loadQuestion();
+    };
     optionsDiv.appendChild(btn);
   });
   prevBtn.style.display=currentQ===0?"none":"inline-block";
-  nextBtn.style.display=currentQ===sections[currentSection].questions.length-1?"none":"inline-block";
-  submitSectionBtn.style.display=currentQ===sections[currentSection].questions.length-1?"inline-block":"none";
 }
 
-function selectAnswer(ans){ userAnswers[currentSection][currentQ]=ans; }
+// ======= أزرار التنقل داخل القسم =======
+prevBtn.onclick=()=>{ if(currentQ>0){ currentQ--; loadQuestion(); } };
+nextBtn.onclick=()=>{ if(currentQ<sections[currentSection].questions.length-1){ currentQ++; loadQuestion(); } };
 
-prevBtn.onclick=()=>{if(currentQ>0){currentQ--; loadQuestion();}};
-nextBtn.onclick=()=>{if(currentQ<sections[currentSection].questions.length-1){currentQ++; loadQuestion();}};
-submitSectionBtn.onclick=submitSection;
-
-function submitSection(){
-  if(!sectionTimers && currentSection<sections.length-1){ currentSection++; loadQuestion(); return; }
+// ======= بدء القسم =======
+function startSection(){
+  quizTitle.innerText=sections[currentSection].title;
+  currentQ=0;
+  loadQuestion();
   clearInterval(timerInterval);
+  totalTime=sectionTime;
+  timerInterval=setInterval(()=>{
+    let minutes=Math.floor(totalTime/60), seconds=totalTime%60;
+    timerDisplay.innerText=`${minutes}:${seconds<10?"0"+seconds:seconds}`;
+    timerBar.style.width=(totalTime/sectionTime*100)+"%";
+    if(totalTime===10) alert("تنبيه: بقي 10 ثوانٍ فقط على انتهاء الوقت!");
+    totalTime--;
+    if(totalTime<0){
+      clearInterval(timerInterval);
+      alert("انتهى الوقت! سيتم الانتقال للقسم التالي.");
+      submitSection();
+    }
+  },1000);
+}
+
+// ======= تسليم القسم وحساب الدرجة =======
+function submitSection(){
+  let score=0;
+  sections[currentSection].questions.forEach((q,i)=>{
+    if(userAnswers[currentSection]?.[i]===q.answer) score++;
+  });
+  sectionScores[currentSection]=score;
+
   if(currentSection<sections.length-1){
     currentSection++;
     startSection();
@@ -130,45 +209,43 @@ function submitSection(){
   }
 }
 
-function startSection(){
-  quizTitle.innerText=sections[currentSection].title;
-  currentQ=0;
-  userAnswers[currentSection]=[];
-  if(sectionTimers) totalTime=sectionTime;
-  loadQuestion();
-  prevBtn.style.display="none";
-  nextBtn.style.display="inline-block";
-  submitSectionBtn.style.display="none";
-
-  clearInterval(timerInterval);
-  timerInterval=setInterval(()=>{
-    let minutes=Math.floor(totalTime/60), seconds=totalTime%60;
-    timerDisplay.innerText=`${minutes}:${seconds<10?"0"+seconds:seconds}`;
-    timerBar.style.width=(totalTime/(sectionTimers?sectionTime:sectionTime*sections.length)*100)+"%";
-    totalTime--;
-    if(totalTime<0){ clearInterval(timerInterval); submitSection(); }
-  },1000);
-}
-
+// ======= تسليم الاختبار النهائي =======
 submitFinalBtn.onclick=()=>{
-  const name=document.getElementById("studentName").value,
-        id=document.getElementById("studentID").value,
-        cls=document.getElementById("studentClass").value;
+  const name=document.getElementById("studentName").value.trim(),
+        id=document.getElementById("studentID").value.trim(),
+        cls=document.getElementById("studentClass").value.trim();
   if(!name||!id||!cls){ alert("الرجاء إدخال جميع البيانات."); return; }
+  let totalScore=sectionScores.reduce((a,b)=>a+b,0);
+  finalSubmit.innerHTML=`<h2>✅ تم استلام الاختبار</h2>
+  <p>سيراجع المختصون الإجابة وستظهر لكم الدرجات قريبًا.</p>
+  <p>مع خالص الأمنيات بالتوفيق والنجاح.</p>`;
 
-  let totalScore=0;
-  sections.forEach((sec,i)=>{ sec.questions.forEach((q,j)=>{ if(userAnswers[i][j]===q.answer) totalScore++; }); });
-
-  finalSubmit.innerHTML=`<h2>✅ تم تسليم الاختبار</h2>
-    <p>الاسم: ${name}</p>
-    <p>الهوية: ${id}</p>
-    <p>الصف: ${cls}</p>
-    <p>الدرجة النهائية: ${totalScore} من ${sections.reduce((a,b)=>a+b.questions.length,0)}</p>`;
-}
-
-window.onbeforeunload=()=>"هل أنت متأكد من مغادرة الصفحة؟ سيتم فقد الإجابات إذا غادرت.";
+  // إرسال البيانات إلى Google Sheets (استبدل الرابط)
+  const googleSheetURL="https://script.google.com/macros/s/AKfycbyrvUFxUDpk1954PJl01PzkHDZ7ohNrGWXw3vnJIohYmZaEvG5ex4DAs0KKBRy05VgQ/exec";
+  fetch(googleSheetURL,{
+    method:"POST",
+    body: JSON.stringify({
+      name:name,
+      id:id,
+      cls:cls,
+      section1:sectionScores[0]||0,
+      section2:sectionScores[1]||0,
+      total:totalScore
+    })
+  }).catch(err=>console.log(err));
+};
 
 startSection();
 </script>
+<body>
+
+<!-- المحتوى الموجود عندك -->
+
+<footer style="margin-top:40px;text-align:center;padding:15px;background:#fff;border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);font-size:15px;color:#555;">
+  ثانوية الفيصلية الأهلية  - ©منصة اختباراتي nafie EDU
+</footer>
+
 </body>
+
 </html>
